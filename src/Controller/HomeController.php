@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class HomeController {
+class HomeController extends AbstractController{
 
     /**
      * @Route("/home/{userName}", name="home",
@@ -21,13 +22,14 @@ class HomeController {
         $age = $request->query->get('age', 8);
         $session = $request->getSession();
         $session->set("user", "Jane");
-        return new Response("Home sweet home vous avez $age ans vous êtes $userName");
+        return $this->render("home/index.html.twig", [
+            "age" => $age,
+            "userName" => $userName,
+        ]);
     }
 
     /**
-     * @Route("/user/{id<\d+>?5}", name="user",
-     * requirements: {"id": "\d+"}
-     * )
+     * @Route("/user/{id<\d+>?5}", name="user")
      *
      * @param Request $request
      * @param int $id
@@ -35,8 +37,7 @@ class HomeController {
      */
     public function userAction(Request $request,int $id = 5): Response
     {
-        $session = $request->getSession();
-        return new Response("bonjour ". $session->get("user"). " votre id est $id");
+        return $this->render("home/user.html.twig", ["id" => $id]);
     }
 
 }
