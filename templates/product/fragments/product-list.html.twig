@@ -1,10 +1,22 @@
 <ul class="list-group">
     {% for product in productList %}
         <li class="list-group-item">
+            <div class="d-flex justify-content-between">
             <a class="btn list-group-item-action"
                href="{{ path('product_details', {'id': product.id}) }}">
                 {{ product.name | upper }}
             </a>
+
+                <a class="btn btn-warning me-3"
+                   href="{{ path('product_edit', {'id': product.id}) }}">
+                    modifier
+                </a>
+
+            <a class="btn btn-danger"
+               href="{{ path('product_delete', {'id': product.id}) }}">
+                X
+            </a>
+            </div>
         </li>
     {% endfor %}
 </ul>

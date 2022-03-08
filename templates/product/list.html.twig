@@ -6,6 +6,13 @@
 
     <p>Il y a {{ productList | length }} résultats</p>
 
+    <div class="d-flex justify-content-end mt-2 mb-3">
+        <a href="{{ path('product_new') }}"
+        class="btn btn-primary">
+            Nouveau produit
+        </a>
+    </div>
+
     <div class="row">
 
         {{ dump(productList) }}
