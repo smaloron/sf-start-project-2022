@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ProductRepository;
 use App\Service\ProductService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,14 +14,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ProductController extends AbstractController {
 
-    private ProductService $productService;
+    private ProductRepository $repository;
 
     /**
      * @param ProductService $productService
      */
-    public function __construct(ProductService $productService)
+    public function __construct(ProductService $productService,
+                                ProductRepository $repository)
     {
-        $this->productService = $productService;
+        $this->repository = $repository;
     }
 
 
@@ -31,7 +33,7 @@ class ProductController extends AbstractController {
      */
     public function details(int $id){
         return $this->render("product/details.html.twig", [
-            "product" => $this->productService->getOneById($id)
+            "product" => $this->repository->findOneById($id)
         ]);
     }
 
@@ -44,9 +46,9 @@ class ProductController extends AbstractController {
         $logger->debug('on est passé dans list');
         
         return $this->render("product/list.html.twig", [
-            "productList" => $this->productService->getAll(),
+            "productList" => $this->repository->findAll(),
             "title" => "Liste de tous les produits",
-            "categoryList" => $this->productService->getDistinctCategories(),
+            "categoryList" => $this->repository->getDistinctCategories(),
             "currentCategory" => null
         ]);
     }
@@ -59,9 +61,9 @@ class ProductController extends AbstractController {
      */
     public function byCategory(string $category){
         return $this->render("product/list.html.twig", [
-            "productList" => $this->productService->getAllByCategory($category),
+            "productList" => $this->repository->findBy(["category" => $category]),
             "title" => "Liste des produits dans la catégorie : $category",
-            "categoryList" => $this->productService->getDistinctCategories(),
+            "categoryList" => $this->repository->getDistinctCategories(),
             "currentCategory" => $category
         ]);
     }
