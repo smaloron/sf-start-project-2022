@@ -1,6 +1,14 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
+
+    {{ render(path('nav',
+        {"current": app.request.attributes.get("_route")})
+    )
+    }}
+
     <h1>Bonjour {{ userName }} vous avez {{ age }} ans</h1>
-    <a href="{{ path('user', {'id': '12'}) }}">Lien vers user</a>
+
+    {{ appNameFromController }}
+
 {% endblock %}

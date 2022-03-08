@@ -1,14 +1,17 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
+
+    {{ render(path('nav',
+              {"current": app.request.attributes.get("_route")})
+        )
+    }}
 <h1>
     Bonjour {{ app.session.get('user') }}
     votre id est {{ id }}
 </h1>
 
-<a href="{{ path('home', {'userName': 'Albert'}) }}">
-    lien vers home (albert)
-</a>
+
 {% endblock %}
 
 {% block message %}

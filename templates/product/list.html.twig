@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <ul class="list-group">
+        {% for product in productList %}
+            <li class="list-group-item">
+                <a class="btn list-group-item-action"
+                        href="{{ path('product_details', {'id': product.id}) }}">
+                    {{ product.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
