@@ -1,15 +1,22 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <ul class="list-group">
-        {% for product in productList %}
-            <li class="list-group-item">
-                <a class="btn list-group-item-action"
-                        href="{{ path('product_details', {'id': product.id}) }}">
-                    {{ product.name }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+
+    <h2>{{ title }}</h2>
+
+    <p>Il y a {{ productList | length }} résultats</p>
+
+    <div class="row">
+
+        {{ dump(productList) }}
+
+        <div class="col-md-8">
+            {{ include('/product/fragments/product-list.html.twig') }}
+        </div>
+        <div class="col-md-4">
+            {{ include('/product/fragments/product-category-list.html.twig') }}
+        </div>
+    </div>
+
 {% endblock %}
 

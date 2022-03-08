@@ -147,4 +147,24 @@ class ProductService
         return $this->productList;
     }
 
+    /**
+     * @param string $category
+     * @return array
+     */
+    public function getAllByCategory(string $category): array {
+        return array_filter($this->productList, function ($item) use ($category){
+           return $item->getCategory() === $category;
+        });
+    }
+
+    /**
+     * @return array
+     */
+    public function getDistinctCategories(): array{
+        $categories = array_map(function($item){
+            return $item->getCategory();
+        }, $this->productList);
+        return array_unique($categories);
+    }
+
 }
