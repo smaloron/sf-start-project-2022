@@ -16,7 +16,7 @@ class AuthorFixtures extends Fixture implements OrderedFixtureInterface
 
     private Generator $faker;
 
-    private array $nationalities = [
+    public static array $nationalities = [
         "Française", "Anglaise", "Allemande", "Espagnole", "Italienne",
         "Irlandaise"
     ];
@@ -33,7 +33,7 @@ class AuthorFixtures extends Fixture implements OrderedFixtureInterface
             $author->setFirstName($this->faker->firstName())
                 ->setLastName($this->faker->lastName())
                 ->setNationality(
-                    $this->faker->randomElement($this->nationalities)
+                    $this->faker->randomElement(self::$nationalities)
                 );
             $manager->persist($author);
             // Ajout de l'auteur en référence pour une utilisation
