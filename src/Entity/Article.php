@@ -31,7 +31,7 @@ class Article
     #[ORM\ManyToOne(targetEntity: Author::class, inversedBy: 'articles')]
     private Author $author;
 
-    #[ORM\ManyToOne(targetEntity: Category::class)]
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'articles')]
     private Category $category;
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class)]

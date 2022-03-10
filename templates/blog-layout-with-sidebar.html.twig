@@ -18,6 +18,21 @@
             </ul>
 
             <hr>
+
+            <hr>
+            <h4>Les Catégories</h4>
+            <ul class="list-group">
+                {% for category in categoryList %}
+                    <li class="list-group-item">
+                        <a href="{{ path('blog_by_category', {'categoryId': category.id}) }}">
+                            {{ category.categoryName }}
+                            ({{ category.articleCount }})
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <hr>
         </div>
     {% endblock %}
 

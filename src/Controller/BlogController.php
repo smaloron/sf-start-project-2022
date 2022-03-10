@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
+use App\Repository\CategoryRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +28,8 @@ class BlogController extends AbstractController
 
     private function getTwigParametersForSideBar(): array{
         return [
-            'authorList' => $this->repository->getAuthorList()
+            'authorList' => $this->repository->getAuthorList(),
+            'categoryList' => $this->repository->getCategoryList()
         ];
     }
 
@@ -112,7 +114,26 @@ class BlogController extends AbstractController
             'blog/list.html.twig',
             $params
         );
+    }
 
+    #[Route('/by-category/{categoryId<\d+>}', name: 'blog_by_category')]
+    public function articleByCategory(
+        CategoryRepository $categoryRepository,
+        int $categoryId): Response {
 
+        $category = $categoryRepository->findOneById($categoryId);
+
+        $params = array_merge(
+            $this->getTwigParametersForSideBar(),
+            [
+                'title' => 'Liste des articles parlant de '.$category->getCategoryName(),
+                'articleList' => $category->getArticles()
+            ]
+        );
+
+        return $this->render(
+            'blog/list.html.twig',
+            $params
+        );
     }
 }

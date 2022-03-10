@@ -74,13 +74,25 @@ class ArticleRepository extends ServiceEntityRepository
     }
     */
 
-    public function getAuthorList(){
+    public function getAuthorList(): array{
         $qb = $this->createQueryBuilder('p')
             ->select('a.id, 
                 a.firstName, a.lastName, 
                 count(p.id) as articleCount')
             ->join('p.author', 'a')
-            ->groupBy('p.author');
+            ->groupBy('p.author')
+            ->orderBy('articleCount','DESC');
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getCategoryList(): array {
+        $qb = $this->createQueryBuilder('p')
+            ->select('c.id, 
+                c.categoryName, 
+                count(p.id) as articleCount')
+            ->join('p.category', 'c')
+            ->groupBy('p.category')
+            ->orderBy('articleCount','DESC');
         return $qb->getQuery()->getResult();
     }
 }
