@@ -2,9 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
+use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 #[Route('/blog')]
@@ -32,11 +37,30 @@ class BlogController extends AbstractController
     }
 
     #[Route('/details/{id<\d+>}', name: 'blog_details')]
-    public function details(int $id = null): Response{
+    public function details(
+        EntityManagerInterface $manager,
+        Request $request,
+        int $id = null): Response{
         $article = $this->repository->findOneById($id);
 
+        // Création du formulaire pour les commentaires
+        $comment = new Comment();
+        $comment->setCreatedAt(new DateTime())
+                ->setArticle($article);
+
+        $form = $this->createForm(CommentType::class, $comment);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $manager->persist($comment);
+            $manager->flush();
+            return $this->redirectToRoute('blog_details', ['id' => $id]);
+        }
+
         return $this->render('blog/details.html.twig', [
-            'article' => $article
+            'article' => $article,
+            'commentForm' => $form->createView()
         ]);
     }
 
