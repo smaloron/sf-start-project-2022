@@ -1,20 +1,21 @@
-{% extends 'base.html.twig' %}
+{% extends 'blog-layout-with-sidebar.html.twig' %}
 
 {% block body %}
 
-    <h1>{{ title }}</h1>
+    <div class="col-md-8">
+        <h1>{{ title }}</h1>
 
-    <p>Il y a {{ articleList | length }} articles </p>
+        <p>Il y a {{ articleList | length }} articles </p>
 
-    <table class="table">
-        <thead>
+        <table class="table">
+            <thead>
             <tr>
                 <th>Titre</th>
                 <th>Auteur</th>
                 <th>Date de publication</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             {% for article in articleList %}
                 <tr>
                     <td>
@@ -30,8 +31,9 @@
                     <td>{{ article.createdAt | date('d/m/Y') }}</td>
                 </tr>
             {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
 {% endblock %}
 
