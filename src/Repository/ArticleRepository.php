@@ -74,14 +74,15 @@ class ArticleRepository extends ServiceEntityRepository
     }
     */
 
-    public function getAuthorList(): array{
+    public function getAuthorList(int $limit = 5): array{
         $qb = $this->createQueryBuilder('p')
             ->select('a.id, 
                 a.firstName, a.lastName, 
                 count(p.id) as articleCount')
             ->join('p.author', 'a')
             ->groupBy('p.author')
-            ->orderBy('articleCount','DESC');
+            ->orderBy('articleCount','DESC')
+            ->setMaxResults($limit);
         return $qb->getQuery()->getResult();
     }
 
@@ -94,5 +95,40 @@ class ArticleRepository extends ServiceEntityRepository
             ->groupBy('p.category')
             ->orderBy('articleCount','DESC');
         return $qb->getQuery()->getResult();
+    }
+
+    public function getArticleBySearchTerm(string $searchTerm): array{
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.title LIKE :search 
+                    OR p.content LIKE :search 
+                    OR a.lastName LIKE :search 
+                    OR a.firstName LIKE :search
+                    OR c.categoryName LIKE :search'
+            )
+            ->join('p.author', 'a')
+            ->join('p.category', 'c')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setParameter(':search', "%$searchTerm%");
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getArticlesGroupedByYears(): array{
+        $qb = $this->createQueryBuilder('p')
+            ->select('year(p.createdAt) as year, 
+                      count(p.id) as articleCount')
+            ->groupBy('year')
+            ->orderBy('year', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getArticlesByYear(int $year): array{
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('year(p.createdAt) = :year')
+            ->setParameter(':year', $year)
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()->getResult();
     }
 }

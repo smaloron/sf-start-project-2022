@@ -28,8 +28,9 @@ class BlogController extends AbstractController
 
     private function getTwigParametersForSideBar(): array{
         return [
-            'authorList' => $this->repository->getAuthorList(),
-            'categoryList' => $this->repository->getCategoryList()
+            'authorList' => $this->repository->getAuthorList(7),
+            'categoryList' => $this->repository->getCategoryList(),
+            'yearList' => $this->repository->getArticlesGroupedByYears()
         ];
     }
 
@@ -135,5 +136,30 @@ class BlogController extends AbstractController
             'blog/list.html.twig',
             $params
         );
+    }
+
+    #[Route('/search', name: 'blog_search')]
+    public function search(Request $request): Response{
+        $searchTerm = $request->query->get('search');
+        $params = array_merge(
+            $this->getTwigParametersForSideBar(),
+            [
+                'title' => "Liste des articles contenant : $searchTerm",
+                'articleList' => $this->repository->getArticleBySearchTerm($searchTerm)
+            ]
+        );
+        return $this->render('blog/list.html.twig', $params);
+    }
+
+    #[Route('/by-year/{year<\d{4}>}', name: 'blog_by_year')]
+    public function articleByYear(int $year): Response{
+        $params = array_merge(
+            $this->getTwigParametersForSideBar(),
+            [
+                'title' => "Liste des articles pour l'année $year",
+                'articleList' => $this->repository->getArticlesByYear($year)
+            ]
+        );
+        return $this->render('blog/list.html.twig', $params);
     }
 }

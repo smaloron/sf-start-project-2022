@@ -15,10 +15,14 @@
 <div class="row justify-content-center">
     {{ include('blog/_navbar.html.twig') }}
     <div class="p-4 col-md-10 mt-5">
+
+
+
         <div class="row">
             {% block body %}{% endblock %}
             {% block sidebar %}{% endblock %}
         </div>
+
     </div>
 </div>
 
