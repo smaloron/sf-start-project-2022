@@ -25,6 +25,12 @@ class BlogController extends AbstractController
         $this->repository = $repository;
     }
 
+    private function getTwigParametersForSideBar(): array{
+        return [
+            'authorList' => $this->repository->getAuthorList()
+        ];
+    }
+
 
     #[Route('/', name: 'blog_home')]
     public function index(): Response
@@ -58,21 +64,32 @@ class BlogController extends AbstractController
             return $this->redirectToRoute('blog_details', ['id' => $id]);
         }
 
-        return $this->render('blog/details.html.twig', [
-            'article' => $article,
-            'commentForm' => $form->createView()
-        ]);
+        $params = array_merge(
+            $this->getTwigParametersForSideBar(),
+            [
+                'article' => $article,
+                'commentForm' => $form->createView()
+            ]
+        );
+
+        return $this->render('blog/details.html.twig', $params);
     }
 
     #[Route('/list', name: 'blog_list')]
     public function list(): Response {
         $articleList = $this->repository->findBy([], ['createdAt' => 'DESC']);
-        return $this->render(
-            'blog/list.html.twig',
+
+        $params = array_merge(
+            $this->getTwigParametersForSideBar(),
             [
                 'articleList' => $articleList,
-                'title' => 'Liste des articles'
+                'title' => 'Liste des articles',
             ]
+        );
+
+        return $this->render(
+            'blog/list.html.twig',
+            $params
         );
     }
 
@@ -83,12 +100,17 @@ class BlogController extends AbstractController
 
         $author = $authorRepository->findOneById($authorId);
 
-        return $this->render(
-            'blog/list.html.twig',
+        $params = array_merge(
+            $this->getTwigParametersForSideBar(),
             [
                 'title' => 'Liste des articles de '.$author->getFullName(),
                 'articleList' => $author->getArticles()
             ]
+        );
+
+        return $this->render(
+            'blog/list.html.twig',
+            $params
         );
 
 
