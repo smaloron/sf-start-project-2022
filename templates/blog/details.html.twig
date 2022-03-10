@@ -2,6 +2,12 @@
 
 {% block body %}
     <div class="col-md-8">
+        <div class="d-flex justify-content-end">
+            <a href="{{ path('blog_edit_article', {'id': article.id}) }}"
+            class="btn btn-success btn-sm">
+                modifier cet article
+            </a>
+        </div>
         <h1>{{ article.title | capitalize }}</h1>
         <div>
             <p>

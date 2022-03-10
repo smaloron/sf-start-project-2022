@@ -1,0 +1,29 @@
+{% extends 'blog-layout-with-sidebar.html.twig' %}
+
+{% block body %}
+    <div class="col-md-8">
+        {{ form_start(articleForm) }}
+            {{ form_row(articleForm.title) }}
+
+            <div class="row">
+                <div class="col">
+                    {{ form_row(articleForm.author) }}
+                </div>
+                <div class="col">
+                    {{ form_row(articleForm.category) }}
+                </div>
+            </div>
+
+            {{ form_row(articleForm.content) }}
+
+            <button type="submit" class="btn btn-primary w-100">
+                Valider
+            </button>
+
+        {{ form_end(articleForm) }}
+    </div>
+
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
+

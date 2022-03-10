@@ -17,6 +17,12 @@
     <div class="p-4 col-md-10 mt-5">
 
 
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    <p>{{ message }}</p>
+                </div>
+            {% endfor %}
+
 
         <div class="row">
             {% block body %}{% endblock %}

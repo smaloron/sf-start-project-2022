@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
+#[ORM\HasLifecycleCallbacks()]
 class Article
 {
     #[ORM\Id]
@@ -161,5 +163,15 @@ class Article
         }
 
         return $this;
+    }
+
+    #[ORM\PrePersist()]
+    public function prePersistEvent(): void{
+        $this->createdAt = new DateTime();
+    }
+
+    #[ORM\PreUpdate()]
+    public function preUpdateEvent(): void{
+        $this->updatedAt = new DateTime();
     }
 }

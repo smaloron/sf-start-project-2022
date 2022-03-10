@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
 use App\Entity\Comment;
+use App\Form\ArticleType;
 use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
@@ -161,5 +163,39 @@ class BlogController extends AbstractController
             ]
         );
         return $this->render('blog/list.html.twig', $params);
+    }
+
+    #[Route('/new', name: 'blog_new_article')]
+    #[Route('/edit/{id<\d+>}', name: 'blog_edit_article')]
+    public function addOrEdit(  Request $request,
+                                EntityManagerInterface $manager,
+                                int $id = null): Response
+    {
+        if($id === null){
+            $article = new Article();
+        } else {
+            $article = $this->repository->findOneById($id);
+        }
+
+        $form = $this->createForm(
+            ArticleType::class,
+            $article
+        );
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $manager->persist($article);
+            $manager->flush();
+
+            $this->addFlash('success', 'Votre article est enregistré');
+
+            return $this->redirectToRoute('blog_list');
+        }
+
+        return $this->render('blog/form.html.twig', [
+            'title' => 'Nouvel article',
+            'articleForm' => $form->createView()
+        ]);
     }
 }
