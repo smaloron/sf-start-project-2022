@@ -7,6 +7,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
@@ -19,12 +20,24 @@ class Article
     private $id;
 
     #[ORM\Column(type: 'string', length: 128)]
+    #[Assert\NotBlank(message: 'Le titre ne peut être vide')]
+    #[Assert\Length(
+        min:10, max: 20,
+        minMessage: 'Le titre ne peut faire moins de {{ limit }} caractères',
+        maxMessage: 'Le titre ne peut faire plus de {{ limit }} caractères'
+    )
+    ]
     private $title;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\Length(
+        min: 8,
+        minMessage: 'Le texte ne peut faire moins de {{ limit }} caractères'
+    )]
     private $content;
 
     #[ORM\Column(type: 'datetime')]
+    #[Assert\Date()]
     private $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
@@ -37,6 +50,7 @@ class Article
     private Category $category;
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class)]
+    #[Assert\Count(max: 3, maxMessage: 'Pas plus de {{ limit }} commentaires par article')]
     private Collection $comments;
 
     public function __construct()

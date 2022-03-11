@@ -25,13 +25,17 @@
         <h2>Les commentaires</h2>
         <div class="row">
             <div class="col-md-4">
-                <h4>Votre commentaire ici</h4>
-                {{ form_start(commentForm) }}
-                {{ form_rest(commentForm) }}
-                <button type="submit" class="btn btn-primary w-100">
-                    Valider
-                </button>
-                {{ form_end(commentForm) }}
+                {% if commentForm is not null %}
+                    <h4>Votre commentaire ici</h4>
+                    {{ form_start(commentForm) }}
+                    {{ form_rest(commentForm) }}
+                    <button type="submit" class="btn btn-primary w-100">
+                        Valider
+                    </button>
+                    {{ form_end(commentForm) }}
+                {% else %}
+                    <p>Impossible d'ajouter de nouveaux commentaires sur cet article</p>
+                {% endif %}
             </div>
             <div class="col-md-8">
                 {% for comment in article.comments %}

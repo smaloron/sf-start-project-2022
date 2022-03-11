@@ -53,27 +53,35 @@ class BlogController extends AbstractController
         Request $request,
         int $id = null): Response{
         $article = $this->repository->findOneById($id);
+        $numberOfComments = $article->getComments()->count();
 
-        // Création du formulaire pour les commentaires
-        $comment = new Comment();
-        $comment->setCreatedAt(new DateTime())
+        $formView = null;
+
+        if($numberOfComments < 4) {
+            // Création du formulaire pour les commentaires
+            $comment = new Comment();
+            $comment->setCreatedAt(new DateTime())
                 ->setArticle($article);
 
-        $form = $this->createForm(CommentType::class, $comment);
+            $form = $this->createForm(CommentType::class, $comment);
 
-        $form->handleRequest($request);
+            $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
-            $manager->persist($comment);
-            $manager->flush();
-            return $this->redirectToRoute('blog_details', ['id' => $id]);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $manager->persist($comment);
+                $manager->flush();
+
+                return $this->redirectToRoute('blog_details', ['id' => $id]);
+            }
+
+            $formView = $form->createView();
         }
 
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
                 'article' => $article,
-                'commentForm' => $form->createView()
+                'commentForm' => $formView
             ]
         );
 

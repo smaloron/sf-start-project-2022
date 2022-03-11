@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -14,12 +15,23 @@ class Comment
     private $id;
 
     #[ORM\Column(type: 'string', length: 80)]
+    #[Assert\Email(message: 'Vous devez saisir un email valide')]
     private $email;
 
     #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\Length(
+        min: 8, max: 50,
+        minMessage: 'Le titre ne peut faire moins de {{ limit }} caractères',
+        maxMessage: 'Le titre ne peut faire plus de {{ limit }} caractères'
+    )]
     private $title;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\Length(
+        min: 12, max: 300,
+        minMessage: 'Le commentaire ne peut faire moins de {{ limit }} caractères',
+        maxMessage: 'Le commentaire ne peut faire plus de {{ limit }} caractères'
+    )]
     private $content;
 
     #[ORM\Column(type: 'datetime')]

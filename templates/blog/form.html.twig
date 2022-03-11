@@ -2,6 +2,17 @@
 
 {% block body %}
     <div class="col-md-8">
+        {% set formErrors = articleForm.vars.errors.form.getErrors(true) %}
+
+        {% if formErrors|length > 0 %}
+            <ul class="alert alert-danger">
+                {% for error in formErrors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+
         {{ form_start(articleForm) }}
             {{ form_row(articleForm.title) }}
 
