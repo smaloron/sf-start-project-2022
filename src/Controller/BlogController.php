@@ -11,11 +11,13 @@ use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
 use App\Repository\CategoryRepository;
+use App\Service\PhotoUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -184,12 +186,11 @@ class BlogController extends AbstractController
     #[Route('/edit/{id<\d+>}', name: 'blog_edit_article')]
     public function addOrEdit(  Request $request,
                                 EntityManagerInterface $manager,
-                                int $id = null): Response
+                                Article $article = null,
+                                PhotoUploader $uploader): Response
     {
-        if($id === null){
+        if($article === null){
             $article = new Article();
-        } else {
-            $article = $this->repository->findOneById($id);
         }
 
         $form = $this->createForm(
@@ -200,6 +201,9 @@ class BlogController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
+            // Gestion de l'upload
+            $uploader->upload($article);
+
             $manager->persist($article);
             $manager->flush();
 
