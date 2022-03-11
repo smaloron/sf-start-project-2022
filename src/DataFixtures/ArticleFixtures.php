@@ -58,6 +58,11 @@ class ArticleFixtures extends Fixture implements OrderedFixtureInterface
             "category". mt_rand(1, CategoryFixtures::$numberOfRecords))
         );
 
+        for($i=0; $i < mt_rand(0, 3); $i++){
+            $tag = $this->getReference("tag". mt_rand(1, TagFixtures::$numberOfRecords));
+            $article->addTag($tag);
+        }
+
 
         $manager->persist($article);
 

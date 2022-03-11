@@ -19,7 +19,7 @@ class Article implements UploadInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private int $id;
 
     #[ORM\Column(type: 'string', length: 128)]
     #[Assert\NotBlank(message: 'Le titre ne peut être vide')]
@@ -29,20 +29,20 @@ class Article implements UploadInterface
         maxMessage: 'Le titre ne peut faire plus de {{ limit }} caractères'
     )
     ]
-    private $title;
+    private string $title;
 
     #[ORM\Column(type: 'text')]
     #[Assert\Length(
         min: 8,
         minMessage: 'Le texte ne peut faire moins de {{ limit }} caractères'
     )]
-    private $content;
+    private string $content;
 
     #[ORM\Column(type: 'datetime')]
-    private $createdAt;
+    private DateTime $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $updatedAt;
+    private ?DateTime $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: Author::class, inversedBy: 'articles')]
     private Author $author;
@@ -58,11 +58,18 @@ class Article implements UploadInterface
     private ?string $imageFileName = null;
 
     #[Assert\Image()]
-    private UploadedFile $uploadedFile;
+    private ?UploadedFile $uploadedFile = null;
+
+    #[ORM\ManyToMany(
+        targetEntity: Tag::class,
+        inversedBy: 'articles',
+        cascade: ['persist'])]
+    private Collection $tags;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -233,5 +240,29 @@ class Article implements UploadInterface
 
     public function hasImage(): bool{
         return $this->imageFileName !== null;
+    }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        $this->tags->removeElement($tag);
+
+        return $this;
     }
 }

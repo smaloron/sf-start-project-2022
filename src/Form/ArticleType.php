@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Article;
 use App\Entity\Author;
 use App\Entity\Category;
+use App\Entity\Tag;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -44,6 +45,13 @@ class ArticleType extends AbstractType
                 'label' => 'La photo de l\'article',
                 'required' => false,
                 //'mapped' => false
+            ])
+            ->add('tags', EntityType::class, [
+                'class' => Tag::class,
+                'choice_label' => 'tagName',
+                'multiple' => true,
+                'expanded' => true,
+                'attr' => ['class' => 'd-flex flex-wrap']
             ])
         ;
     }

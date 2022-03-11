@@ -20,6 +20,11 @@
                 <p>
                     par : {{ article.author.fullName }}
                 </p>
+                <p>
+                    {% for tag in article.tags %}
+                        {{ tag.tagName }}
+                    {% endfor %}
+                </p>
                 <p class="text-end">{{ article.category.categoryName }}</p>
             </div>
 
