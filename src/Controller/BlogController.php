@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Author;
+use App\Entity\Category;
 use App\Entity\Comment;
 use App\Form\ArticleType;
 use App\Form\CommentType;
@@ -11,10 +13,13 @@ use App\Repository\AuthorRepository;
 use App\Repository\CategoryRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
 #[Route('/blog')]
 class BlogController extends AbstractController
 {
@@ -51,8 +56,8 @@ class BlogController extends AbstractController
     public function details(
         EntityManagerInterface $manager,
         Request $request,
-        int $id = null): Response{
-        $article = $this->repository->findOneById($id);
+        Article $article): Response{
+
         $numberOfComments = $article->getComments()->count();
 
         $formView = null;
@@ -71,7 +76,7 @@ class BlogController extends AbstractController
                 $manager->persist($comment);
                 $manager->flush();
 
-                return $this->redirectToRoute('blog_details', ['id' => $id]);
+                return $this->redirectToRoute('blog_details', ['id' => $article->getId()]);
             }
 
             $formView = $form->createView();
@@ -107,11 +112,12 @@ class BlogController extends AbstractController
     }
 
     #[Route('/by-author/{authorId<\d+>}', name: 'blog_by_author')]
+    #[ParamConverter('author', options: ['id' => 'authorId'])]
     public function articleByAuthor(
         AuthorRepository $authorRepository,
-        int $authorId): Response {
+        Author $author): Response {
 
-        $author = $authorRepository->findOneById($authorId);
+        //$author = $authorRepository->findOneById($authorId);
 
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
@@ -128,11 +134,12 @@ class BlogController extends AbstractController
     }
 
     #[Route('/by-category/{categoryId<\d+>}', name: 'blog_by_category')]
+    #[Entity('category', expr: "repository.find(categoryId)")]
     public function articleByCategory(
         CategoryRepository $categoryRepository,
-        int $categoryId): Response {
+        Category $category): Response {
 
-        $category = $categoryRepository->findOneById($categoryId);
+        //$category = $categoryRepository->findOneById($categoryId);
 
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
@@ -205,5 +212,25 @@ class BlogController extends AbstractController
             'title' => 'Nouvel article',
             'articleForm' => $form->createView()
         ]);
+    }
+
+    #[Route('/by-date/{startDate}/{endDate}')]
+    public function articlesByDate(
+        DateTime $startDate,
+        DateTime $endDate
+    ): Response{
+
+
+        $articles = $this->repository->getArticlesByDate($startDate, $endDate);
+
+        $params = array_merge(
+            $this->getTwigParametersForSideBar(),
+            [
+                'title' => "Liste des articles par date",
+                'articleList' => $articles
+            ]
+        );
+
+        return $this->render('blog/list.html.twig', $params);
     }
 }

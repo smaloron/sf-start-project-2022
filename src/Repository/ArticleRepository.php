@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Article;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -129,6 +130,16 @@ class ArticleRepository extends ServiceEntityRepository
             ->where('year(p.createdAt) = :year')
             ->setParameter(':year', $year)
             ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()->getResult();
+    }
+
+    public function getArticlesByDate(DateTime $start, DateTime $end): array{
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.createdAt BETWEEN :start AND :end')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setParameter(':start', $start)
+            ->setParameter(':end', $end)
             ->getQuery()->getResult();
     }
 }
