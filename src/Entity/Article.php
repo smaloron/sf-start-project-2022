@@ -2,17 +2,19 @@
 
 namespace App\Entity;
 
+use App\Contract\UploadInterface;
 use App\Repository\ArticleRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
-class Article
+class Article implements UploadInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -37,7 +39,6 @@ class Article
     private $content;
 
     #[ORM\Column(type: 'datetime')]
-    #[Assert\Date()]
     private $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
@@ -52,6 +53,12 @@ class Article
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class)]
     #[Assert\Count(max: 3, maxMessage: 'Pas plus de {{ limit }} commentaires par article')]
     private Collection $comments;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $imageFileName = null;
+
+    #[Assert\Image()]
+    private UploadedFile $uploadedFile;
 
     public function __construct()
     {
@@ -179,6 +186,29 @@ class Article
         return $this;
     }
 
+    /**
+     * @return UploadedFile
+     */
+    public function getUploadedFile(): ?UploadedFile
+    {
+        return $this->uploadedFile;
+    }
+
+    /**
+     * @param UploadedFile $uploadedFile
+     * @return Article
+     */
+    public function setUploadedFile(UploadedFile $uploadedFile): Article
+    {
+        $this->uploadedFile = $uploadedFile;
+
+        return $this;
+    }
+
+
+
+
+
     #[ORM\PrePersist()]
     public function prePersistEvent(): void{
         $this->createdAt = new DateTime();
@@ -187,5 +217,21 @@ class Article
     #[ORM\PreUpdate()]
     public function preUpdateEvent(): void{
         $this->updatedAt = new DateTime();
+    }
+
+    public function getImageFileName(): ?string
+    {
+        return $this->imageFileName;
+    }
+
+    public function setImageFileName(?string $imageFileName): self
+    {
+        $this->imageFileName = $imageFileName;
+
+        return $this;
+    }
+
+    public function hasImage(): bool{
+        return $this->imageFileName !== null;
     }
 }
