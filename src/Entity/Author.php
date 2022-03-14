@@ -6,9 +6,11 @@ use App\Repository\AuthorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AuthorRepository::class)]
-class Author
+class Author implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,6 +22,13 @@ class Author
 
     #[ORM\Column(type: 'string', length: 45)]
     private $lastName;
+
+    #[ORM\Column(type: 'string', length: 30, unique: true )]
+    private $email;
+
+    #[ORM\Column(type: 'string', length: 128)]
+    private $hashedPassword;
+
 
     #[ORM\Column(type: 'string', length: 45)]
     private $nationality;
@@ -113,5 +122,49 @@ class Author
         }
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ['ROLE_AUTHOR'];
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getHashedPassword(): ?string
+    {
+        return $this->hashedPassword;
+    }
+
+    public function setHashedPassword(string $hashedPassword): self
+    {
+        $this->hashedPassword = $hashedPassword;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->hashedPassword;
     }
 }

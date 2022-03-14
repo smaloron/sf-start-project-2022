@@ -8,6 +8,7 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Generator;
 use Faker\Factory;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthorFixtures extends Fixture implements OrderedFixtureInterface
 {
@@ -15,15 +16,17 @@ class AuthorFixtures extends Fixture implements OrderedFixtureInterface
     public static int $numberOfRecords = 15;
 
     private Generator $faker;
+    private UserPasswordHasherInterface $passwordEncoder;
 
     public static array $nationalities = [
         "Française", "Anglaise", "Allemande", "Espagnole", "Italienne",
         "Irlandaise"
     ];
 
-    public function __construct()
+    public function __construct(UserPasswordHasherInterface $passwordEncoder)
     {
         $this->faker = Factory::create("fr_FR");
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     public function load(ObjectManager $manager): void
@@ -32,9 +35,16 @@ class AuthorFixtures extends Fixture implements OrderedFixtureInterface
             $author = new Author();
             $author->setFirstName($this->faker->firstName())
                 ->setLastName($this->faker->lastName())
+                ->setEmail($this->faker->email())
                 ->setNationality(
                     $this->faker->randomElement(self::$nationalities)
                 );
+
+            $author->setHashedPassword(
+                $this->passwordEncoder->hashPassword(
+                    $author, "123"
+                )
+            );
             $manager->persist($author);
             // Ajout de l'auteur en référence pour une utilisation
             // ultérieure dans une autre classe de fixtures

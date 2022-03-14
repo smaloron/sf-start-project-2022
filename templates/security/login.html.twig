@@ -1,0 +1,38 @@
+{% extends 'blog-layout.html.twig' %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 p-4">
+            <h3>Connexion</h3>
+
+            {% if error is not null %}
+                <div class="alert alert-danger p-3">
+                    {{ error.message }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Identifiant</label>
+                    <input type="text" name="_username" class="form-control"
+                    value="{{ username }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mot de passe</label>
+                    <input type="text" name="_password" class="form-control">
+                </div>
+
+                <input type="hidden" name="_target_path" value="blog_home">
+
+                <button type="submit" class="btn btn-primary">Connexion</button>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
