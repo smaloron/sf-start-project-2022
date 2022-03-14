@@ -182,8 +182,8 @@ class BlogController extends AbstractController
         return $this->render('blog/list.html.twig', $params);
     }
 
-    #[Route('/new', name: 'blog_new_article')]
-    #[Route('/edit/{id<\d+>}', name: 'blog_edit_article')]
+    #[Route('/secure/new', name: 'blog_new_article')]
+    #[Route('/secure/edit/{id<\d+>}', name: 'blog_edit_article')]
     public function addOrEdit(  Request $request,
                                 EntityManagerInterface $manager,
                                 Article $article = null,
@@ -191,6 +191,7 @@ class BlogController extends AbstractController
     {
         if($article === null){
             $article = new Article();
+            $article->setAuthor($this->getUser());
         }
 
         $form = $this->createForm(
@@ -198,7 +199,12 @@ class BlogController extends AbstractController
             $article
         );
 
+        //dump($article);
+
         $form->handleRequest($request);
+
+        dump($form->getData());
+        dump($article);
 
         if($form->isSubmitted() && $form->isValid()){
             // Gestion de l'upload

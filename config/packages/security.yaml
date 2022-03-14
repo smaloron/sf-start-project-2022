@@ -3,12 +3,23 @@ security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        App\Entity\Adminitrator:
+            algorithm: auto
+
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_database:
             entity:
                 class: App\Entity\Author
                 property: email
+        # used to reload user from session & other features (e.g. switch_user)
+        admin_provider:
+            entity:
+                class: App\Entity\Administrator
+                property: username
+        all_users:
+            chain:
+                providers: ['admin_provider', 'users_in_database']
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -16,10 +27,13 @@ security:
         main:
             pattern: ^/
             lazy: true
-            provider: users_in_database
+            provider: all_users
             form_login:
                 login_path: app_login
                 check_path: app_login
+            logout:
+                path: app_logout
+                target: blog_home
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -30,6 +44,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/[a-z]+/secure, roles: ['ROLE_AUTHOR']}
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

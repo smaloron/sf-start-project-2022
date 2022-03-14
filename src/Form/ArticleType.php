@@ -36,11 +36,14 @@ class ArticleType extends AbstractType
                 'label' => 'Texte',
                 'attr' => ['rows' => 10]
             ])
+/*
             ->add('author', EntityType::class, [
                 'class' => Author::class,
                 'choice_label' => 'fullName',
-                'label' => 'Auteur'
+                'label' => 'Auteur',
+                'attr' => ['disabled' => true]
             ])
+*/
             ->add('category', EntityType::class,[
                 'class' => Category::class,
                 'choice_label' => 'categoryName',
