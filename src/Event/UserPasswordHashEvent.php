@@ -3,6 +3,7 @@
 namespace App\Event;
 
 use App\Entity\Administrator;
+use App\Entity\Author;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -21,7 +22,7 @@ class UserPasswordHashEvent
     public function prePersist(LifecycleEventArgs $args): void{
         $entity = $args->getEntity();
 
-        if(! $entity instanceof Administrator){
+        if(! ($entity instanceof Administrator || $entity instanceof  Author)){
             return;
         }
 

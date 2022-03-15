@@ -29,6 +29,8 @@ class Author implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 128)]
     private $hashedPassword;
 
+    private $plainPassword;
+
 
     #[ORM\Column(type: 'string', length: 45)]
     private $nationality;
@@ -163,8 +165,35 @@ class Author implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function setPassword(string $hashedPassword): self
+    {
+        $this->setHashedPassword($hashedPassword);
+
+        return $this;
+    }
+
     public function getPassword(): ?string
     {
         return $this->hashedPassword;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * @param mixed $plainPassword
+     * @return Author
+     */
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+
 }

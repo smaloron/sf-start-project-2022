@@ -33,6 +33,9 @@ class AuthorType extends AbstractType
                 //'expanded' => true,
                 //'multiple' => true
             ])
+            ->add('email')
+            ->add('plainPassword')
+
         ;
     }
 

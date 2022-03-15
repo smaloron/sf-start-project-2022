@@ -51,7 +51,7 @@ class AuthorController extends AbstractController
     public function edit(Request $request, Author $author, AuthorRepository $authorRepository): Response
     {
 
-        $this->denyAccessUnlessGranted('ROLE_AUTHOR', $this->getUser());
+
 
         $form = $this->createForm(AuthorType::class, $author);
         $form->handleRequest($request);
