@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ form_start(adminForm) }}
+        {{ form_rest(adminForm) }}
+
+        <button type="submit" class="btn btn-primary w-100">
+            Valider
+        </button>
+
+    {{ form_end(adminForm) }}
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

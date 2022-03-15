@@ -13,7 +13,7 @@ class AdminType extends AbstractType
     {
         $builder
             ->add('username')
-            ->add('password')
+            ->add('plainPassword')
         ;
     }
 
