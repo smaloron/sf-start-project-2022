@@ -15,6 +15,7 @@ use App\Service\PhotoUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -183,8 +184,7 @@ class BlogController extends AbstractController
     }
 
     #[Route('/secure/new', name: 'blog_new_article')]
-    #[Route('/secure/edit/{id<\d+>}', name: 'blog_edit_article')]
-    public function addOrEdit(  Request $request,
+    public function new(  Request $request,
                                 EntityManagerInterface $manager,
                                 Article $article = null,
                                 PhotoUploader $uploader): Response
@@ -222,6 +222,16 @@ class BlogController extends AbstractController
             'title' => 'Nouvel article',
             'articleForm' => $form->createView()
         ]);
+    }
+
+    #[Route('/secure/edit/{id<\d+>}', name: 'blog_edit_article')]
+    #[IsGranted('POST_EDIT', subject: 'article')]
+    public function edit(  Request $request,
+                          EntityManagerInterface $manager,
+                          Article $article,
+                          PhotoUploader $uploader): Response
+    {
+        return $this->new($request, $manager, $article, $uploader);
     }
 
     #[Route('/by-date/{startDate}/{endDate}')]
