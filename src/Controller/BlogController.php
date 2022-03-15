@@ -14,6 +14,7 @@ use App\Repository\CategoryRepository;
 use App\Service\PhotoUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -55,7 +56,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/details/{id<\d+>}', name: 'blog_details')]
+    #[Route('/details/{slug}', name: 'blog_details')]
     public function details(
         EntityManagerInterface $manager,
         Request $request,
@@ -85,11 +86,18 @@ class BlogController extends AbstractController
             $formView = $form->createView();
         }
 
+        // Gestion des versions
+        $logEntryRepository = $manager->getRepository('App:LogEntry');
+        $versionList = $logEntryRepository->getLogEntries($article);
+
+        dump($versionList);
+
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
                 'article' => $article,
-                'commentForm' => $formView
+                'commentForm' => $formView,
+                'versionList' => $versionList
             ]
         );
 
@@ -252,5 +260,20 @@ class BlogController extends AbstractController
         );
 
         return $this->render('blog/list.html.twig', $params);
+    }
+
+    #[Route("/revert/{id<\d+>}/{version<\d+>}", name: 'blog_revert')]
+    public function revertEntity(
+        Article $article,
+        int $version,
+        EntityManagerInterface $manager){
+
+        $logRepository = $manager->getRepository('App:LogEntry');
+        $logRepository->revert($article, $version);
+        $manager->persist($article);
+        $manager->flush();
+
+        return $this->redirectToRoute("blog_details", ["slug" => $article->getSlug()]);
+
     }
 }

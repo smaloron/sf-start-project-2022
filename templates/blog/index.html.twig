@@ -12,7 +12,7 @@
                     par : {{ article.author.fullName }}
                 </p>
                 <p>{{ article.excerpt(20) }} ...
-                    <a href="{{ path('blog_details', {'id': article.id }) }}">En savoir plus</a>
+                    <a href="{{ path('blog_details', {'slug': article.slug }) }}">En savoir plus</a>
                 </p>
 
             </div>

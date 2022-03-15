@@ -77,6 +77,41 @@
                 {% endfor %}
             </div>
         </div>
+
+        <h3>Versions</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>action</th>
+                    <th>version</th>
+                    <th>date</th>
+                    <th>contenu</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in versionList %}
+                    <tr>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.version }}</td>
+                        <td>{{ log.loggedAt | date('d/m/Y') }}</td>
+                        <td>
+                            <ul>
+                                {% for key, val in log.data %}
+                                    <li>{{ key }} = {{ val }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            <a href="{{ path('blog_revert', {'id': log.objectId, 'version': log.version}) }}">
+                                rollback
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
     </div>
 
 {% endblock %}
