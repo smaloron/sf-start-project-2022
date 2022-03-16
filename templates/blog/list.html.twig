@@ -11,9 +11,15 @@
         <table class="table">
             <thead>
             <tr>
-                <th>Titre</th>
-                <th>Auteur</th>
-                <th>Date de publication</th>
+                <th class="{{ articleList.isSorted('p.title')? 'sorted': '' }}">
+                    {{ knp_pagination_sortable(articleList, 'Titre', 'p.title') }}
+                </th>
+                <th class="{{ articleList.isSorted('a.lastName')? 'sorted': '' }}">
+                    {{ knp_pagination_sortable(articleList, 'Auteur', 'a.lastName') }}
+                </th>
+                <th class="{{ articleList.isSorted('p.createdAt')? 'sorted': '' }}">
+                    {{ knp_pagination_sortable(articleList, 'Date de publication', 'p.createdAt') }}
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -39,6 +45,12 @@
             {{ knp_pagination_render(articleList) }}
         </div>
     </div>
+
+    <style>
+        .sorted {
+            color: red;
+        }
+    </style>
 
 {% endblock %}
 

@@ -132,6 +132,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->select('p')
             ->where('year(p.createdAt) = :year')
             ->setParameter(':year', $year)
+            ->join('p.author', 'a')
             ->orderBy('p.createdAt', 'DESC')
             ->getQuery();
     }
@@ -149,7 +150,9 @@ class ArticleRepository extends ServiceEntityRepository
     public function getAllArticlesQuery()
     {
         return $this->createQueryBuilder('p')
-            ->select('p')->orderBy('p.createdAt', 'DESC')
+            ->select('p')
+            ->orderBy('p.createdAt', 'DESC')
+            ->join('p.author', 'a')
             ->getQuery();
     }
 
@@ -168,6 +171,7 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->select('p')
             ->join('p.category', 'c')
+            ->join('p.author', 'a')
             ->where('c.id=:categoryId')
             ->setParameter('categoryId', $category->getId())
             ->orderBy('p.createdAt', 'DESC')

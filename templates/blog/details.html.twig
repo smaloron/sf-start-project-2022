@@ -15,7 +15,7 @@
             <div class="{{ article.hasImage? 'col-7':'col-12' }}">
                 <h1>{{ article.title | capitalize }}</h1>
                 <p>
-                    publié le : {{ article.createdAt | date('d/m/Y') }}
+                    publié le : {{ article.createdAt | ago }}
                 </p>
                 <p>
                     par : {{ article.author.fullName }}
