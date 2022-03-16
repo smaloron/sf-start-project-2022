@@ -14,7 +14,9 @@ use App\Repository\CategoryRepository;
 use App\Service\PhotoUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -104,9 +106,19 @@ class BlogController extends AbstractController
         return $this->render('blog/details.html.twig', $params);
     }
 
+    private function getPagination(Query $query, PaginatorInterface $paginator, Request $request){
+        return $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            $this->getParameter('page_size')
+        );
+    }
+
     #[Route('/list', name: 'blog_list')]
-    public function list(): Response {
-        $articleList = $this->repository->findBy([], ['createdAt' => 'DESC']);
+    public function list(Request $request, PaginatorInterface $paginator): Response {
+        $articleList = $this->getPagination(
+            $this->repository->getAllArticlesQuery(), $paginator, $request
+        );
 
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
@@ -126,7 +138,9 @@ class BlogController extends AbstractController
     #[ParamConverter('author', options: ['id' => 'authorId'])]
     public function articleByAuthor(
         AuthorRepository $authorRepository,
-        Author $author): Response {
+        Author $author,
+        Request $request,
+        PaginatorInterface $paginator): Response {
 
         //$author = $authorRepository->findOneById($authorId);
 
@@ -134,7 +148,9 @@ class BlogController extends AbstractController
             $this->getTwigParametersForSideBar(),
             [
                 'title' => 'Liste des articles de '.$author->getFullName(),
-                'articleList' => $author->getArticles()
+                'articleList' => $this->getPagination(
+                    $this->repository->getArticlesByAuthor(), $paginator, $request
+                )
             ]
         );
 
@@ -148,7 +164,10 @@ class BlogController extends AbstractController
     #[Entity('category', expr: "repository.find(categoryId)")]
     public function articleByCategory(
         CategoryRepository $categoryRepository,
-        Category $category): Response {
+        Category $category,
+        Request $request,
+        PaginatorInterface $paginator
+    ): Response {
 
         //$category = $categoryRepository->findOneById($categoryId);
 
@@ -156,7 +175,9 @@ class BlogController extends AbstractController
             $this->getTwigParametersForSideBar(),
             [
                 'title' => 'Liste des articles parlant de '.$category->getCategoryName(),
-                'articleList' => $category->getArticles()
+                'articleList' => $this->getPagination(
+                    $this->repository->getArticlesByCategory($category), $paginator, $request
+                )
             ]
         );
 
@@ -167,25 +188,33 @@ class BlogController extends AbstractController
     }
 
     #[Route('/search', name: 'blog_search')]
-    public function search(Request $request): Response{
+    public function search(
+                            Request $request,
+                            PaginatorInterface $paginator): Response{
         $searchTerm = $request->query->get('search');
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
                 'title' => "Liste des articles contenant : $searchTerm",
-                'articleList' => $this->repository->getArticleBySearchTerm($searchTerm)
+                'articleList' => $this->getPagination(
+                    $this->repository->getArticleBySearchTerm($searchTerm), $paginator, $request
+                )
             ]
         );
         return $this->render('blog/list.html.twig', $params);
     }
 
     #[Route('/by-year/{year<\d{4}>}', name: 'blog_by_year')]
-    public function articleByYear(int $year): Response{
+    public function articleByYear(int $year,
+                                PaginatorInterface $paginator,
+                                Request $request): Response{
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
                 'title' => "Liste des articles pour l'année $year",
-                'articleList' => $this->repository->getArticlesByYear($year)
+                'articleList' => $this->getPagination(
+                    $this->repository->getArticlesByYear($year), $paginator, $request
+                )
             ]
         );
         return $this->render('blog/list.html.twig', $params);
