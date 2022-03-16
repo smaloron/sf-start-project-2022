@@ -4,6 +4,7 @@
 
 {% block body %}
     <div class="row">
+        <img src="{{ asset('build/images/cookie-the-fox.jpg') }}">
         {% for article in articleList %}
             <div class="col-md-6">
                 <h4>{{ article.title | capitalize}}</h4>
