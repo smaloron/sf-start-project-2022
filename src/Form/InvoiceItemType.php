@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\InvoiceItem;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,6 +16,13 @@ class InvoiceItemType extends AbstractType
             ->add('label')
             ->add('unitPrice')
             ->add('qt')
+            ->add('deleteButton', ButtonType::class, [
+                'attr' => [
+                    'class' => 'btn btn-danger delete',
+                    'style' => 'margin-top: 33px'
+                ],
+                'label' => 'X'
+            ])
         ;
     }
 
@@ -22,6 +30,7 @@ class InvoiceItemType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => InvoiceItem::class,
+            'attr' => ['class' => 'd-flex']
         ]);
     }
 }
