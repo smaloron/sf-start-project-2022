@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des commentaires en attente de modération</h1>
+
+    {% for comment in pendingComments %}
+    <div class="mb-3">
+        <h3>Commentaire sur l'article : {{ comment.article.title }}</h3>
+        <p>{{ comment.email }} a dit :</p>
+        <p>{{ comment.content }}</p>
+
+        <a href="{{ path('app_comments_moderate', {'approved': 1, 'id': comment.id}) }}"
+           class="btn btn-success">Approuver</a>
+        <a href="{{ path('app_comments_moderate', {'approved': 0, 'id': comment.id}) }}"
+           class="btn btn-danger">Rejeter</a>
+        <hr>
+    </div>
+    {% endfor %}
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

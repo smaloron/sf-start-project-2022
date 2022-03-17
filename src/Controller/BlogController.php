@@ -11,6 +11,7 @@ use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\CommentRepository;
 use App\Service\PhotoUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -62,7 +63,8 @@ class BlogController extends AbstractController
     public function details(
         EntityManagerInterface $manager,
         Request $request,
-        Article $article): Response{
+        Article $article,
+        CommentRepository $commentRepository): Response{
 
         $numberOfComments = $article->getComments()->count();
 
@@ -82,7 +84,7 @@ class BlogController extends AbstractController
                 $manager->persist($comment);
                 $manager->flush();
 
-                return $this->redirectToRoute('blog_details', ['id' => $article->getId()]);
+                return $this->redirectToRoute('blog_details', ['slug' => $article->getSlug()]);
             }
 
             $formView = $form->createView();
@@ -99,7 +101,8 @@ class BlogController extends AbstractController
             [
                 'article' => $article,
                 'commentForm' => $formView,
-                'versionList' => $versionList
+                'versionList' => $versionList,
+                'comments' => $commentRepository->findBy(['approved'=> true])
             ]
         );
 
