@@ -73,4 +73,10 @@ class AuthorRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function getPotentialCoAuthorsList(Author $author){
+        return $this->createQueryBuilder('a')
+            ->select('a')
+            ->where('a.id != :authorId')
+            ->setParameter('authorId', $author->getId());
+    }
 }

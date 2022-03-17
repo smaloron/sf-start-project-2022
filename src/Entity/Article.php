@@ -74,6 +74,9 @@ class Article implements UploadInterface
         cascade: ['persist'])]
     private Collection $tags;
 
+    #[ORM\ManyToOne(targetEntity: Author::class)]
+    private $coAuthor;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -284,6 +287,18 @@ class Article implements UploadInterface
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getCoAuthor(): ?Author
+    {
+        return $this->coAuthor;
+    }
+
+    public function setCoAuthor(?Author $coAuthor): self
+    {
+        $this->coAuthor = $coAuthor;
 
         return $this;
     }
